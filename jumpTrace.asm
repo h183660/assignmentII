@@ -1,6 +1,3 @@
-; P S E U D O  H A S H  F U N C T I O N
-; =====================================
-; char jumpTrace(matrixAddr, height, width)
 jumpTrace:
    funargs3 edx, ecx, ebx ; m, h, w
    push edx               ; m             ; #7

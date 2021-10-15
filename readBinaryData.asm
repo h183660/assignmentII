@@ -1,6 +1,3 @@
-; D A T A  I N P U T
-; ==================
-; void readBinaryData(tgtAddress, nBytes)
 readBinaryData:
    mov eax,SYS_READ        ;  ────────────┐
    mov ebx,STDIN           ;   TO BE      │

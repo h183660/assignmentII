@@ -147,7 +147,7 @@ _start:
 ; ==================
 ; void readBinaryData(tgtAddress, nBytes)
 readBinaryData:
-   mov eax,SYS_READ        ;  ────────────┐
+   mov eax,SYS_READ        ;  ────────────┐ 
    mov ebx,STDIN           ;   TO BE      │
    mov ecx, w32FrStck(1)   ;   COMMENTED  │
    mov edx, 8*4            ;              │
@@ -162,8 +162,6 @@ readBinaryData:
    cmp edx, 0              ;              │
    jg readBinaryData       ;  ────────────┘
    ret
-
-
 
 
 ; P S E U D O  H A S H  F U N C T I O N
@@ -200,6 +198,8 @@ jTLoop:
    readoutMatrix eax, w32FrStck(7), w32FrStck(5), w32FrStck(2), w32FrStck(3)
                           ; m     ,     w       ,     y       ,     x
 
+   ; Subtask 2
+
    ;                                      ┌───────────────────
    ; ─────────────────────────────────────┤ TO BE FILLED
    ;                                      └ (ca. 6 instructions)
@@ -223,7 +223,7 @@ jTLoop:
 
 
 
-
+; Subtask 3
 ; M A T R I X  M U L T I P L I C A T I O N
 ; ========================================
 ; Perform multiplication on the global matrices A and B, storing the result in C.

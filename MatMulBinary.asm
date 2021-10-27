@@ -143,6 +143,19 @@ _start:
 
 
 
+; Subtask 1 Data input
+; In assembly, data in decimal form (like in the A*.mat les) is not only more computationally expensive, there
+; also is no standard library that has this functionality built-in. Manually implemementing decimal input would
+; require reading the individual digits, translating them to integers and adding them together each with the right
+; power-of-10 factor. This is not required for this assignment.
+;
+; Instead, you are to accept the data in the binary format that toBinary.c produces. Fortunately, this is already
+; the format that the matrices will have in memory as x86-native arrays, so all that needs to be done is copying
+; to the program's memory.
+;
+; This is already implemented in the readBinaryData routine. Your task is to comment every line of this routine,
+; explaining what it does and/or why.
+
 ; D A T A  I N P U T
 ; ==================
 ; void readBinaryData(tgtAddress, nBytes)
@@ -162,6 +175,28 @@ readBinaryData:
    cmp edx, 0              ;              │
    jg readBinaryData       ;  ────────────┘
    ret
+
+; Answer the following questions (in a comment after the ret statement):
+;
+; - Would the routine work with matrices of any size?
+; It does work with the A- and B matrices we are using,
+; but what requirement makes this possible?
+; 
+; 
+; 
+; 
+; 
+; 
+; 
+; - What could be changed to actually make it work with any size?
+; Discuss if your suggestion has any drawbacks.
+; 
+; 
+; 
+; 
+; 
+; 
+; 
 
 
 ; P S E U D O  H A S H  F U N C T I O N
@@ -198,12 +233,35 @@ jTLoop:
    readoutMatrix eax, w32FrStck(7), w32FrStck(5), w32FrStck(2), w32FrStck(3)
                           ; m     ,     w       ,     y       ,     x
 
-   ; Subtask 2
 
-   ;                                      ┌───────────────────
-   ; ─────────────────────────────────────┤ TO BE FILLED
-   ;                                      └ (ca. 6 instructions)
-                          
+
+
+
+
+
+; Subtask 2 Pseudo-hash
+;
+; The jumpTrace function reduces a matrix to a single integer, one that will change unpredictably if any of the
+; matrix entries is varied.
+; 
+; The assembly template contains part of this function's implementation, demonstrating in particular how to set
+; up a function and a loop. You need to complete the second half of the loop body. Make use of the provided
+; macros, and comment your code extensively.
+; 
+; In order to check/debug this part, we recommend temporarily modifying both the assembly main-routine and
+; the corresponding Java reference to directly show the jump-trace of one of the input matrices, without computing
+; 1the matrix multiplication. Ensure that the assembly version then consistently gives the same output as the Java
+; one (given dierent matrix inputs from the examples).                          
+;
+;
+;                                      ┌───────────────────
+;──────────────────────────────────────┤ TO BE FILLED
+;                                      └ (ca. 6 instructions)
+
+
+
+
+
    mov ecx, w32FrStck(0)  ; iterations
    dec ecx                ; --iterations
    mov w32FrStck(0), ecx  ; iterations
@@ -223,13 +281,25 @@ jTLoop:
 
 
 
-; Subtask 3
+; Subtask 3 Matrix multiplication
+;
+; For the final part you are on your own: implement the nested loop that computes the product of matrices A
+; and B and stores the result in C.
+;
 ; M A T R I X  M U L T I P L I C A T I O N
 ; ========================================
 ; Perform multiplication on the global matrices A and B, storing the result in C.
+
 matmul:
    ;                                      ┌───────────────────
    ; ─────────────────────────────────────┤ TO BE FILLED
    ;                                      └───────────
+
+
+
+
+
+
+
    ret
 

@@ -155,24 +155,25 @@ _start:
 ; This is already implemented in the readBinaryData routine. Your task is to
 ; comment every line of this routine, explaining what it does and/or why.
 ;
+; ==================
 ; D A T A  I N P U T
 ; ==================
 ; void readBinaryData(tgtAddress, nBytes)
 readBinaryData:
    mov eax,SYS_READ        ;  ────────────┐ 
-   mov ebx,STDIN           ;   TO BE      │
-   mov ecx, w32FrStck(1)   ;   COMMENTED  │
-   mov edx, 8*4            ;              │
-   int 80h                 ;              │
-   mov eax, 8*4            ;              │
-   mov ecx, w32FrStck(1)   ;              │
-   add ecx, eax            ;              │
-   mov w32FrStck(1), ecx   ;              │
-   mov edx, w32FrStck(2)   ;              │
-   sub edx, eax            ;              │
-   mov w32FrStck(2), edx   ;              │
-   cmp edx, 0              ;              │
-   jg readBinaryData       ;  ────────────┘
+   mov ebx,STDIN           ;   TO BE      │ 
+   mov ecx, w32FrStck(1)   ;   COMMENTED  │ 
+   mov edx, 8*4            ;              │ 
+   int 80h                 ;              │ 
+   mov eax, 8*4            ;              │ 
+   mov ecx, w32FrStck(1)   ;              │ 
+   add ecx, eax            ;              │ 
+   mov w32FrStck(1), ecx   ;              │ 
+   mov edx, w32FrStck(2)   ;              │ 
+   sub edx, eax            ;              │ 
+   mov w32FrStck(2), edx   ;              │ 
+   cmp edx, 0              ;              │ 
+   jg readBinaryData       ;  ────────────┘ 
    ret
 ;
 ; Answer the following questions (in a comment after the ret statement):
@@ -201,8 +202,9 @@ readBinaryData:
 ; The program could also be rewritten, it could take the matrix heigth and width as 
 ; a argument from SYS_READ. and use theese values while calling readBinaryData.
 ; 
-;
-;
+; 
+; 
+; =====================================
 ; P S E U D O  H A S H  F U N C T I O N
 ; =====================================
 ; char jumpTrace(matrixAddr, height, width)

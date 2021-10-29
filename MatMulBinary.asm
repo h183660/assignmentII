@@ -241,10 +241,6 @@ jTLoop:
 
 
 
-
-
-
-
 ; Subtask 2 Pseudo-hash
 ;
 ; The jumpTrace function reduces a matrix to a single integer, one that will 
@@ -258,17 +254,45 @@ jTLoop:
 ; In order to check/debug this part, we recommend temporarily modifying
 ; both the assembly main-routine and the corresponding Java reference to
 ; directly show the jump-trace of one of the input matrices, without computing
-; 1the matrix multiplication. Ensure that the assembly version then consistently
-; gives the same output as the Java one (given different matrix inputs from the examples).                          
+; the matrix multiplication. Ensure that the assembly version then consistently
+; gives the same output as the Java one (given different matrix inputs from the examples).
 ;
+; Java Ekvivalent:
+;
+;   // A pseudo-hash for matrices.
+;   public static char jumpTrace(int[][] m) {
+;     int w = m[0].length;
+;     int h = m.length;
+;     int iterations = w*h;
+;     int x=0, y=0;
+;     int acc=1;
+;     for (int i=0; i<iterations; ++i) {
+;       acc = (acc*m[y][x] + 1) % (w*h);
+;       y = acc % h;
+;
+;
+;
+;       x = (acc*m[y][x]) % w;
+;
+;
+;
+;     }
+;     return (char) (((int) 'a') + acc%26);
+;   }
 ;
 ;                                      ┌───────────────────
 ;──────────────────────────────────────┤ TO BE FILLED
 ;                                      └ (ca. 6 instructions)
-
-
-
-
+   mov ecx, w32FrStck(1)  ; acc
+   mul ecx                ; eax <- acc*m[y][x]
+   
+   mov ebx, w32FrStck(5)  ; w
+   
+   div ebx                ; edx <- (acc*m[y][x]) % (w)
+   
+   mov w32FrStck(3), edx  ; x <- edx
+   
+   
 
    mov ecx, w32FrStck(0)  ; iterations
    dec ecx                ; --iterations
@@ -299,6 +323,7 @@ jTLoop:
 ; Perform multiplication on the global matrices A and B, storing the result in C.
 ;
 ; Java Ekvivalent:
+;
 ;    int C[][] = new int[l][m];
 ;    for (int i=0; i<l; ++i) {
 ;      for (int j=0; j<m; ++j) {

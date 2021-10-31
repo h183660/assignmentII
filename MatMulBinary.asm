@@ -160,20 +160,20 @@ _start:
 ; ==================
 ; void readBinaryData(tgtAddress, nBytes)
 readBinaryData:
-   mov eax,SYS_READ        ;  ────────────┐ 
-   mov ebx,STDIN           ;   TO BE      │ 
-   mov ecx, w32FrStck(1)   ;   COMMENTED  │ 
-   mov edx, 8*4            ;              │ 
-   int 80h                 ;              │ 
-   mov eax, 8*4            ;              │ 
-   mov ecx, w32FrStck(1)   ;              │ 
-   add ecx, eax            ;              │ 
-   mov w32FrStck(1), ecx   ;              │ 
-   mov edx, w32FrStck(2)   ;              │ 
-   sub edx, eax            ;              │ 
-   mov w32FrStck(2), edx   ;              │ 
-   cmp edx, 0              ;              │ 
-   jg readBinaryData       ;  ────────────┘ 
+   mov eax,SYS_READ        ; SYS_READ is equal to 3, corresponding to the sys_read system call. This is stored in the accumulator.
+   mov ebx,STDIN           ; STDIN is equal to 0 from the .data section. 0 is the file descriptor for STDIN.
+   mov ecx, w32FrStck(1)   ; Saves input data to the memory adress stored in ecx.
+   mov edx, 8*4            ; Size of the incoming message. 8*4=32, this corresponding to a 32bit binary number.
+   int 80h                 ; Interrupt, it now reads 32 characters from STDIN and stores it where ECX points to.
+   mov eax, 8*4            ; 
+   mov ecx, w32FrStck(1)   ; 
+   add ecx, eax            ; 
+   mov w32FrStck(1), ecx   ; 
+   mov edx, w32FrStck(2)   ; 
+   sub edx, eax            ; 
+   mov w32FrStck(2), edx   ; 
+   cmp edx, 0              ; Compares the data stored in edx with 0
+   jg readBinaryData       ; Jumps to readBinaryDate (loops) if edx > 0
    ret
 ;
 ; Answer the following questions (in a comment after the ret statement):
@@ -287,6 +287,8 @@ jTLoop:
    mul ecx                ; eax <- acc*m[y][x]
    
    mov ebx, w32FrStck(5)  ; w
+   
+   mov edx, 0
    
    div ebx                ; edx <- (acc*m[y][x]) % (w)
    

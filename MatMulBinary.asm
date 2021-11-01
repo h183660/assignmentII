@@ -339,21 +339,34 @@ matmul:
 ;                                      ┌───────────────────
 ; ─────────────────────────────────────┤ TO BE FILLED
 ;                                      └───────────
-   middle_loop:
+middle_loop:
+
 ;  int acc = 0;
-   inner_loop:
+   mov acc, 0
+
+inner_loop:
+
 ;  acc += A[i][k] * B[k][j]
+   mov eax, A[i][k]
+   mul B[k][j]
+   add total
+
 ;  for (int k=0; k<n; ++k)
    inc k
    cmp k, n
    jl inner_loop
+
 ;  C[i][j] = acc;
+   mov C[i][j], acc
+
 ;  for (int j=0; j<m; ++j)
    inc j
    cmp j, m
    jl middle_loop
+
 ;  for (int i=0; i<l; ++i)
    inc i
    cmp i, l
    jl matmul
+
    ret

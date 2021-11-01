@@ -97,9 +97,9 @@ section .bss
 
 
 
-;  =============================
+;================================
 ;  M A I N  E N T R Y  P O I N T
-;  =============================
+;================================
 section .text
 global _start
 _start:
@@ -155,29 +155,26 @@ _start:
 ; This is already implemented in the readBinaryData routine. Your task is to
 ; comment every line of this routine, explaining what it does and/or why.
 ;
-; ==================
+; ===================
 ; D A T A  I N P U T
-; ==================
+; ===================
 ; void readBinaryData(tgtAddress, nBytes)
 readBinaryData:
    mov eax,SYS_READ        ; SYS_READ is equal to 3, corresponding to the sys_read system call. This is stored in the accumulator.
    mov ebx,STDIN           ; STDIN is equal to 0 from the .data section. 0 is the file descriptor for STDIN.
-   mov ecx, w32FrStck(1)   ; Saves input data to the memory adress stored in ecx.
+   mov ecx, w32FrStck(1)   ; Saves input data to the adress stored in ecx.
    mov edx, 8*4            ; Size of the incoming message. 8*4=32, this corresponding to a 32bit binary number.
    int 80h                 ; Interrupt, it now reads 32 characters from STDIN and stores it where ECX points to.
-   mov eax, 8*4            ; 
-   mov ecx, w32FrStck(1)   ; 
-   add ecx, eax            ; 
-   mov w32FrStck(1), ecx   ; 
-   mov edx, w32FrStck(2)   ; 
-   sub edx, eax            ; 
-   mov w32FrStck(2), edx   ; 
-   cmp edx, 0              ; Compares the data stored in edx with 0
-   jg readBinaryData       ; Jumps to readBinaryDate (loops) if edx > 0
+   mov eax, 8*4            ; Sets EAX to 32 (0x20), like in 32 bits...
+   mov ecx, w32FrStck(1)   ; Sets ecx to the address stored in w32FrStck(1)
+   add ecx, eax            ; Adds 32 to the address stored in ecx
+   mov w32FrStck(1), ecx   ; Stores the value back in w32FrStck(1) 
+   mov edx, w32FrStck(2)   ; Stores the remainding bits from w32FrStck(2) to edx.
+   sub edx, eax            ; Subtracts 32 (0x20) from the remainding bits.
+   mov w32FrStck(2), edx   ; Stores the updated remainding bits value to the w32FrStck(2) adress.
+   cmp edx, 0              ; Compares the "remainding bits" with 0.
+   jg readBinaryData       ; Jumps to readBinaryDate (loops) if remainding bits > 0.
    ret
-;
-; Answer the following questions (in a comment after the ret statement):
-;
 ; - Would the routine work with matrices of any size?
 ; It does work with the A- and B matrices we are using,
 ; but what requirement makes this possible?
@@ -191,8 +188,6 @@ readBinaryData:
 ; Furthermore matrix multiplication is only defined while the number of columns in 
 ; matrix A matches the number of rows in matrix B.
 ; 
-;
-; 
 ; - What could be changed to actually make it work with any size?
 ; Discuss if your suggestion has any drawbacks.
 ; 
@@ -201,9 +196,8 @@ readBinaryData:
 ; 
 ; The program could also be rewritten, it could take the matrix heigth and width as 
 ; a argument from SYS_READ. and use theese values while calling readBinaryData.
-; 
-; 
-; 
+
+
 ; =====================================
 ; P S E U D O  H A S H  F U N C T I O N
 ; =====================================

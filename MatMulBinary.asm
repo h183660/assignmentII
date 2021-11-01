@@ -313,15 +313,16 @@ jTLoop:
 
 
 ; Subtask 3 Matrix multiplication
-;
+; 
 ; For the final part you are on your own: implement the nested loop that computes
 ; the product of matrices A and B and stores the result in C.
-;
+; 
+;==========================================
 ; M A T R I X  M U L T I P L I C A T I O N
-; ========================================
+;==========================================
 ; Perform multiplication on the global matrices A and B, storing the result in C.
 ;
-; Java Ekvivalent:
+; Java Referance Method:
 ;
 ;    int C[][] = new int[l][m];
 ;    for (int i=0; i<l; ++i) {
@@ -329,20 +330,14 @@ jTLoop:
 ;        int acc = 0;
 ;        for (int k=0; k<n; ++k) {
 ;          acc += A[i][k] * B[k][j];
-;        }
+;        } // Indre for loop
 ;        C[i][j] = acc;
-;      }
-;    }
+;      } // Midterste for loop
+;    } // Ytre foor loop
 matmul:
    ;                                      ┌───────────────────
    ; ─────────────────────────────────────┤ TO BE FILLED
    ;                                      └───────────
-
-
-
-
-
-
    
    ret
 

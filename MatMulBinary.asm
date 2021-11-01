@@ -324,22 +324,36 @@ jTLoop:
 ;==========================================
 ; Perform multiplication on the global matrices A and B, storing the result in C.
 ;
-; Java Referance Method:
+; Java Referance Code:
 ;
-;    int C[][] = new int[l][m];
-;    for (int i=0; i<l; ++i) {
-;      for (int j=0; j<m; ++j) {
+;    for (int i=0; i<l; ++i) { // Ytre for løkke
+;      for (int j=0; j<m; ++j) { // Midterste for loop
 ;        int acc = 0;
-;        for (int k=0; k<n; ++k) {
+;        for (int k=0; k<n; ++k) { // Innerste for loop
 ;          acc += A[i][k] * B[k][j];
 ;        } // Indre for loop
 ;        C[i][j] = acc;
 ;      } // Midterste for loop
 ;    } // Ytre foor loop
 matmul:
-   ;                                      ┌───────────────────
-   ; ─────────────────────────────────────┤ TO BE FILLED
-   ;                                      └───────────
-   
+;                                      ┌───────────────────
+; ─────────────────────────────────────┤ TO BE FILLED
+;                                      └───────────
+   middle_loop:
+;  int acc = 0;
+   inner_loop:
+;  acc += A[i][k] * B[k][j]
+;  for (int k=0; k<n; ++k)
+   inc k
+   cmp k, n
+   jl inner_loop
+;  C[i][j] = acc;
+;  for (int j=0; j<m; ++j)
+   inc j
+   cmp j, m
+   jl middle_loop
+;  for (int i=0; i<l; ++i)
+   inc i
+   cmp i, l
+   jl matmul
    ret
-

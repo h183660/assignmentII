@@ -337,9 +337,6 @@ jTLoop:
 ;    } // Ytre foor loop
 ;
 matmul:
-;                                      ┌───────────────────
-; ─────────────────────────────────────┤ TO BE FILLED
-;                                      └───────────
    push dword 1           ; acc           ;     #3
    push 0                 ; iterations k (=n)   #2
    push 0                 ; iterations j (=m)   #1
@@ -350,19 +347,21 @@ outer_loop:
 middle_loop:
 
 ;  int acc = 0;
-   mov w32FrStck(3), 0
+   mov eax, w32FrStck(3)
+   mov eax, 0
+   mov w32FrStck(3), eax
 
 inner_loop:
 
 ;  acc += A[i][k] * B[k][j]
 ;  la A[i][k] være
-   readoutMatrix ebx, MatrixA , n, w32FrStck(2), w32FrStck(0)
+   readoutMatrix eax, matrixA , n, w32FrStck(2), w32FrStck(0)
                   ;     mA    , w,      y=k    ,     x=i
 ;  la B[k][j] være
-   readoutMatrix ecx, MatrixB , m, w32FrStck(1), w32FrStck(2)
+   readoutMatrix ebx, matrixB , m, w32FrStck(1), w32FrStck(2)
                   ;     mB    , w,      y=j    ,     x=k
-   mul ebx, ecx ; A[i][k] * B[k][j]
-   add w32FrStck(1), ebx; acc += A[i][k] * B[k][j]
+   mul ebx ; A[i][k] * B[k][j]
+   add w32FrStck(1), eax; acc += A[i][k] * B[k][j]
 
 ;  for (int k=0; k<n; ++k)
    mov ecx, w32FrStck(2)  ; iterations k
@@ -372,8 +371,9 @@ inner_loop:
    jl inner_loop
 
 ;  C[i][j] = acc;
-   writeToMatrix w32FrStck(3) , MatrixC, m, w32FrStck(1), w32FrStck(0)
-            ;       acc       ,   mc   , w,     y       ,     x
+   mov eax, w32FrStck(3)
+   writeToMatrix eax , matrixC, m, w32FrStck(1), w32FrStck(0)
+            ;    acc ,   mc   , w,     y       ,     x
 
 ;  for (int j=0; j<m; ++j)
    mov ecx, w32FrStck(1)  ; iterations j

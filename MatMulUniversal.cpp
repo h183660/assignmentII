@@ -35,7 +35,7 @@ class MatMulUniversal {
     return (char) (((int) 'a') + acc%26);
   }
   
-}
+};
 
 int main() {
   int l = 300;

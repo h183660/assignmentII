@@ -354,14 +354,14 @@ middle_loop:
 inner_loop:
 
 ;  acc += A[i][k] * B[k][j]
-;  la A[i][k] være
    readoutMatrix eax, matrixA , n, w32FrStck(2), w32FrStck(0)
                   ;     mA    , w,      y=k    ,     x=i
-;  la B[k][j] være
    readoutMatrix ebx, matrixB , m, w32FrStck(1), w32FrStck(2)
                   ;     mB    , w,      y=j    ,     x=k
    mul ebx ; A[i][k] * B[k][j]
-   add w32FrStck(1), eax; acc += A[i][k] * B[k][j]
+   mov ecx, w32FrStck(1)
+   add ecx, eax; acc += A[i][k] * B[k][j]
+   mov w32FrStck(1), ecx
 
 ;  for (int k=0; k<n; ++k)
    mov ecx, w32FrStck(2)  ; iterations k

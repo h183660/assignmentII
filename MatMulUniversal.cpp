@@ -45,9 +45,9 @@ int main() {
     int A[l][n];
     int B[n][m];
 
-      DataInput input = new DataInputStream(System.in);
-      A = importMatrixBinary(input, l,n);
-      B = importMatrixBinary(input, n,m);
+    DataInput input = new DataInputStream(System.in);
+    A = importMatrixBinary(input, l,n);
+    B = importMatrixBinary(input, n,m);
 
     int C[][] = new int[l][m];
     for (int i=0; i<l; ++i) {

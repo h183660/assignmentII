@@ -318,7 +318,7 @@ jTLoop:
 ; 
 ; For the final part you are on your own: implement the nested loop that computes
 ; the product of matrices A and B and stores the result in C.
-; 
+;
 ;==========================================
 ; M A T R I X  M U L T I P L I C A T I O N
 ;==========================================
@@ -335,38 +335,63 @@ jTLoop:
 ;        C[i][j] = acc;
 ;      } // Midterste for loop
 ;    } // Ytre foor loop
+;
 matmul:
 ;                                      ┌───────────────────
 ; ─────────────────────────────────────┤ TO BE FILLED
 ;                                      └───────────
+   push dword 1           ; acc           ;     #3
+   push 0                 ; iterations k (=n)   #2
+   push 0                 ; iterations j (=m)   #1
+   push 0                 ; iterations i (=l)   #0
+
+outer_loop:
+
 middle_loop:
 
 ;  int acc = 0;
-   mov acc, 0
+   mov w32FrStck(3), 0
 
 inner_loop:
 
 ;  acc += A[i][k] * B[k][j]
-   mov eax, A[i][k]
-   mul B[k][j]
-   add total
+;  la A[i][k] være
+   readoutMatrix ebx, MatrixA , n, w32FrStck(2), w32FrStck(0)
+                  ;     mA    , w,      y=k    ,     x=i
+;  la B[k][j] være
+   readoutMatrix ecx, MatrixB , m, w32FrStck(1), w32FrStck(2)
+                  ;     mB    , w,      y=j    ,     x=k
+   mul ebx, ecx ; A[i][k] * B[k][j]
+   add w32FrStck(1), ebx; acc += A[i][k] * B[k][j]
 
 ;  for (int k=0; k<n; ++k)
-   inc k
-   cmp k, n
+   mov ecx, w32FrStck(2)  ; iterations k
+   inc ecx                ; k++
+   mov w32FrStck(2), ecx  ; save k
+   cmp ecx, n             ; k < n ?
    jl inner_loop
 
 ;  C[i][j] = acc;
-   mov C[i][j], acc
+   writeToMatrix w32FrStck(3) , MatrixC, m, w32FrStck(1), w32FrStck(0)
+            ;       acc       ,   mc   , w,     y       ,     x
 
 ;  for (int j=0; j<m; ++j)
-   inc j
-   cmp j, m
+   mov ecx, w32FrStck(1)  ; iterations j
+   inc ecx                ; j++
+   mov w32FrStck(1), ecx  ; save j
+   cmp ecx, m             ; j < m ?
    jl middle_loop
 
 ;  for (int i=0; i<l; ++i)
-   inc i
-   cmp i, l
-   jl matmul
+   mov ecx, w32FrStck(0)  ; iterations i
+   inc ecx                ; i++
+   mov w32FrStck(0), ecx  ; save i
+   cmp ecx, l             ; i < l ?
+   jl outer_loop
+   
+   pop edx                ; i           ; #0
+   pop eax                ; j           ; #1
+   pop edx                ; k           ; #2
+   pop eax                ; acc         ; #3
 
    ret

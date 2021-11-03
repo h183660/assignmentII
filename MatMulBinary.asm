@@ -274,9 +274,9 @@ inner_loop:
    jl inner_loop
    
 ;  C[i][j] = acc;
-   mov eax, w32FrStck(3)
-   writeToMatrix eax , matrixC, m, w32FrStck(1), w32FrStck(0)
-            ;    acc ,   mc   , w,     y       ,     x
+   mov ebx, w32FrStck(3)
+   writeToMatrix ebx , matrixC, m, w32FrStck(1), w32FrStck(0)
+            ;    acc ,   mC   , w,     y=j     ,     x=i
    
 ;  for (int j=0; j<m; ++j)
    mov ecx, w32FrStck(1)  ; iterations j

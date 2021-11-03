@@ -13,7 +13,7 @@
 ;  in particular passing arguments to "functions".
 ;  Note that the macros are expanded before the actual assembler begins, you
 ;  could as well do that manuall.
-; 
+
 ; Reference the 32-bit value that has been `push`ed nth-most recently.
 %define w32FrStck(n) [esp + 4 * (n)]
 
@@ -97,9 +97,9 @@ section .bss
 
 
 
-;================================
+
 ;  M A I N  E N T R Y  P O I N T
-;================================
+;  =============================
 section .text
 global _start
 _start:
@@ -134,30 +134,10 @@ _start:
    int 80h
 
    mov ebx,0
-   mov eax,1       ; sys_exit
+   mov eax,1       ;; sys_exit
    int 80h
 
-
-
-
 ; Subtask 1 Data input
-;
-; In assembly, data in decimal form (like in the A*.mat les) is not only more
-; computationally expensive, there also is no standard library that has this
-; functionality built-in. Manually implemementing decimal input would require
-; reading the individual digits, translating them to integers and adding them
-; together each with the right power-of-10 factor. This is not required for this assignment.
-;
-; Instead, you are to accept the data in the binary format that toBinary.c produces.
-; Fortunately, this is already the format that the matrices will have in memory as 
-; x86-native arrays, so all that needs to be done is copying to the program's memory.
-;
-; This is already implemented in the readBinaryData routine. Your task is to
-; comment every line of this routine, explaining what it does and/or why.
-;
-;====================
-; D A T A  I N P U T
-;====================
 ; void readBinaryData(tgtAddress, nBytes)
 readBinaryData:
    mov eax,SYS_READ        ; SYS_READ is equal to 3, corresponding to the sys_read system call. This is stored in the accumulator.
@@ -178,70 +158,26 @@ readBinaryData:
 ; - Would the routine work with matrices of any size?
 ; It does work with the A- and B matrices we are using,
 ; but what requirement makes this possible?
-; 
+
 ; No, it would not work with matrices of any size. The matrices has to fit the specified
 ; row and column count from the .data section, here lies the variables l, n and m. 
 ; l and n specify the A matrix height and width, while n and m specify the heigth and
 ; width of matrix B. Here l = 300, n = 50 and m = 500, this matches the given A and B
 ; matrices. If you wanted matrices of other sized theese values has to be changed.
-;
+
 ; Furthermore matrix multiplication is only defined while the number of columns in 
 ; matrix A matches the number of rows in matrix B.
-; 
+
 ; - What could be changed to actually make it work with any size?
 ; Discuss if your suggestion has any drawbacks.
-; 
+
 ; The l, n and m variables could be changed to fit matrices of other sizes, but this 
 ; requires compiling again for different values. 
-; 
+
 ; The program could also be rewritten, it could take the matrix heigth and width as 
 ; a argument from SYS_READ. and use theese values while calling readBinaryData.
 
-
-
-
-
 ; Subtask 2 Pseudo-hash
-;
-; The jumpTrace function reduces a matrix to a single integer, one that will 
-; change unpredictably if any of the matrix entries is varied.
-; 
-; The assembly template contains part of this function's implementation, 
-; demonstrating in particular how to set up a function and a loop.
-; You need to complete the second half of the loop body.
-; Make use of the provided macros, and comment your code extensively.
-; 
-; In order to check/debug this part, we recommend temporarily modifying
-; both the assembly main-routine and the corresponding Java reference to
-; directly show the jump-trace of one of the input matrices, without computing
-; the matrix multiplication. Ensure that the assembly version then consistently
-; gives the same output as the Java one (given different matrix inputs from the examples).
-;
-; Java Referance Method:
-;
-;   // A pseudo-hash for matrices.
-;   public static char jumpTrace(int[][] m) {
-;     int w = m[0].length;
-;     int h = m.length;
-;     int iterations = w*h;
-;     int x=0, y=0;
-;     int acc=1;
-;     for (int i=0; i<iterations; ++i) {
-;       acc = (acc*m[y][x] + 1) % (w*h);
-;       y = acc % h;
-;
-;
-;
-;       x = (acc*m[y][x]) % w;
-;
-;
-;
-;     }
-;     return (char) (((int) 'a') + acc%26);
-;   }
-;=======================================
-; P S E U D O  H A S H  F U N C T I O N
-;=======================================
 ; char jumpTrace(matrixAddr, height, width)
 jumpTrace:
    funargs3 edx, ecx, ebx ; m, h, w
@@ -274,31 +210,18 @@ jTLoop:
    readoutMatrix eax, w32FrStck(7), w32FrStck(5), w32FrStck(2), w32FrStck(3)
                           ; m     ,     w       ,     y       ,     x
 
-
-
-
-
-;
-;                                      ┌───────────────────
-;──────────────────────────────────────┤ TO BE FILLED
-;                                      └ (ca. 6 instructions)
-   mov ecx, w32FrStck(1)  ; acc
-   mul ecx                ; eax <- acc*m[y][x]
-   mov ebx, w32FrStck(5)  ; w
+   mov ecx, w32FrStck(1)
+   mul ecx
+   mov ebx, w32FrStck(5)
    mov edx, 0
-   div ebx                ; edx <- (acc*m[y][x]) % (w)
-   mov w32FrStck(3), edx  ; x <- edx
-   
-   
-   
-   
+   div ebx
+   mov w32FrStck(3), edx
 
    mov ecx, w32FrStck(0)  ; iterations
    dec ecx                ; --iterations
    mov w32FrStck(0), ecx  ; iterations
    cmp ecx, 0             ; iterations > 0 ?
    jg jTLoop
-
    pop edx                ; iterations  ; #0
    pop eax                ; acc         ; #1
    pop edx                ; y           ; #2
@@ -307,44 +230,24 @@ jTLoop:
    pop edx                ; w           ; #5
    pop edx                ; matrix size ; #6
    pop edx                ; m           ; #7
-
    funret3_1 eax
 
-
-
-
-
 ; Subtask 3 Matrix multiplication
-; 
-; For the final part you are on your own: implement the nested loop that computes
-; the product of matrices A and B and stores the result in C.
-;
-;==========================================
-; M A T R I X  M U L T I P L I C A T I O N
-;==========================================
-; Perform multiplication on the global matrices A and B, storing the result in C.
-;
-; Java Referance Code:
-;
-;    for (int i=0; i<l; ++i) { // Ytre for løkke
-;      for (int j=0; j<m; ++j) { // Midterste for loop
-;        int acc = 0;
-;        for (int k=0; k<n; ++k) { // Innerste for loop
-;          acc += A[i][k] * B[k][j];
-;        } // Indre for loop
-;        C[i][j] = acc;
-;      } // Midterste for loop
-;    } // Ytre foor loop
-;
 matmul:
-   push dword 1           ; acc           ;     #3
+   push 0                 ; acc                 #3
    push 0                 ; iterations k (=n)   #2
    push 0                 ; iterations j (=m)   #1
    push 0                 ; iterations i (=l)   #0
 
 outer_loop:
+   mov ecx, w32FrStck(1) ; j
+   mov ecx, 0 ; j = 0
+   mov w32FrStck(1), ecx ; store j
 
 middle_loop:
+   mov ecx, w32FrStck(2) ; k
+   mov ecx, 0 ; k = 0
+   mov w32FrStck(2), ecx ; store k
 
 ;  int acc = 0;
    mov eax, w32FrStck(3)
@@ -358,30 +261,30 @@ inner_loop:
                   ;     mA    , w,      y=k    ,     x=i
    readoutMatrix ebx, matrixB , m, w32FrStck(1), w32FrStck(2)
                   ;     mB    , w,      y=j    ,     x=k
-   mul ebx ; A[i][k] * B[k][j]
-   mov ecx, w32FrStck(1)
+   mul ebx ; A[i][k] * B[k][j]d
+   mov ecx, w32FrStck(3) ; acc
    add ecx, eax; acc += A[i][k] * B[k][j]
-   mov w32FrStck(1), ecx
-
+   mov w32FrStck(3), ecx ; store acc
+   
 ;  for (int k=0; k<n; ++k)
    mov ecx, w32FrStck(2)  ; iterations k
    inc ecx                ; k++
    mov w32FrStck(2), ecx  ; save k
    cmp ecx, n             ; k < n ?
    jl inner_loop
-
+   
 ;  C[i][j] = acc;
    mov eax, w32FrStck(3)
    writeToMatrix eax , matrixC, m, w32FrStck(1), w32FrStck(0)
             ;    acc ,   mc   , w,     y       ,     x
-
+   
 ;  for (int j=0; j<m; ++j)
    mov ecx, w32FrStck(1)  ; iterations j
    inc ecx                ; j++
    mov w32FrStck(1), ecx  ; save j
    cmp ecx, m             ; j < m ?
    jl middle_loop
-
+   
 ;  for (int i=0; i<l; ++i)
    mov ecx, w32FrStck(0)  ; iterations i
    inc ecx                ; i++
@@ -393,5 +296,5 @@ inner_loop:
    pop eax                ; j           ; #1
    pop edx                ; k           ; #2
    pop eax                ; acc         ; #3
-
+   
    ret

@@ -1,3 +1,3 @@
 #!/bin/bash
-nasm -f elf32 MatMulBinary.asm -o MatMulBinary.o
+nasm -f elf -F dwarf -g MatMulBinary.asm
 ld -m elf_i386 MatMulBinary.o -o MatMulBinary

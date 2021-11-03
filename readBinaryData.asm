@@ -1,21 +1,4 @@
 ; Subtask 1 Data input
-;
-; In assembly, data in decimal form (like in the A*.mat les) is not only more
-; computationally expensive, there also is no standard library that has this
-; functionality built-in. Manually implemementing decimal input would require
-; reading the individual digits, translating them to integers and adding them
-; together each with the right power-of-10 factor. This is not required for this assignment.
-;
-; Instead, you are to accept the data in the binary format that toBinary.c produces.
-; Fortunately, this is already the format that the matrices will have in memory as 
-; x86-native arrays, so all that needs to be done is copying to the program's memory.
-;
-; This is already implemented in the readBinaryData routine. Your task is to
-; comment every line of this routine, explaining what it does and/or why.
-;
-;====================
-; D A T A  I N P U T
-;====================
 ; void readBinaryData(tgtAddress, nBytes)
 readBinaryData:
    mov eax,SYS_READ        ; SYS_READ is equal to 3, corresponding to the sys_read system call. This is stored in the accumulator.

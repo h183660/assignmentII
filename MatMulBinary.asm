@@ -214,7 +214,7 @@ jTLoop:
    mul ecx                ; eax <- acc*m[y][x]
    mov ebx, w32FrStck(5)  ; w 
    mov edx, 0 
-   div ebx
+   div ebx                ; (acc*m[y][x]) % w
    mov w32FrStck(3), edx  ; Store x
 
    mov ecx, w32FrStck(0)  ; iterations
@@ -259,9 +259,9 @@ middle_loop:
    
 
 ;  int acc = 0;
-   mov eax, w32FrStck(3)
-   mov eax, 0
-   mov w32FrStck(3), eax
+   mov eax, w32FrStck(3) ; acc
+   mov eax, 0            ; acc = 0
+   mov w32FrStck(3), eax ; store acc
 
 ;  for (int k=0; k<n; ++k)
    mov ecx, w32FrStck(2) ; k
@@ -274,13 +274,14 @@ inner_loop:
 
 ;  acc += A[i][k] * B[k][j]
    readoutMatrix eax, matrixA , n, w32FrStck(0), w32FrStck(2)
-                  ;     mA    , w,      y=i    ,     x=x
+                  ;     mA    , w,      y=i    ,     x=k
    readoutMatrix ebx, matrixB , m, w32FrStck(2), w32FrStck(1)
                   ;     mB    , w,      y=k    ,     x=j
    mul ebx ; A[i][k] * B[k][j]
-   mov ecx, w32FrStck(3) ; acc
-   add ecx, eax; acc += A[i][k] * B[k][j]
-   mov w32FrStck(3), ecx ; store acc
+   mov ebx, w32FrStck(3) ; acc
+   add ebx, eax ; acc += A[i][k] * B[k][j]
+   add ebx, edx
+   mov w32FrStck(3), ebx ; store acc
    
 
    mov ecx, w32FrStck(2)  ; iterations k

@@ -29,12 +29,12 @@ jTLoop:
    readoutMatrix eax, w32FrStck(7), w32FrStck(5), w32FrStck(2), w32FrStck(3)
                           ; m     ,     w       ,     y       ,     x
 
-   mov ecx, w32FrStck(1)
-   mul ecx
-   mov ebx, w32FrStck(5)
-   mov edx, 0
-   div ebx
-   mov w32FrStck(3), edx
+   mov ecx, w32FrStck(1)  ; ecx <- acc 
+   mul ecx                ; eax <- acc*m[y][x]
+   mov ebx, w32FrStck(5)  ; w 
+   mov edx, 0 
+   div ebx                ; (acc*m[y][x]) % w
+   mov w32FrStck(3), edx  ; Store x
 
    mov ecx, w32FrStck(0)  ; iterations
    dec ecx                ; --iterations

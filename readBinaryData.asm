@@ -1,5 +1,3 @@
-; Subtask 1 Data input
-; void readBinaryData(tgtAddress, nBytes)
 readBinaryData:
    mov eax,SYS_READ        ; SYS_READ is equal to 3, corresponding to the sys_read system call. This is stored in the accumulator.
    mov ebx,STDIN           ; STDIN is equal to 0 from the .data section. 0 is the file descriptor for STDIN.
@@ -19,21 +17,21 @@ readBinaryData:
 ; - Would the routine work with matrices of any size?
 ; It does work with the A- and B matrices we are using,
 ; but what requirement makes this possible?
-; 
+
 ; No, it would not work with matrices of any size. The matrices has to fit the specified
 ; row and column count from the .data section, here lies the variables l, n and m. 
 ; l and n specify the A matrix height and width, while n and m specify the heigth and
 ; width of matrix B. Here l = 300, n = 50 and m = 500, this matches the given A and B
 ; matrices. If you wanted matrices of other sized theese values has to be changed.
-;
+
 ; Furthermore matrix multiplication is only defined while the number of columns in 
 ; matrix A matches the number of rows in matrix B.
-; 
+
 ; - What could be changed to actually make it work with any size?
 ; Discuss if your suggestion has any drawbacks.
-; 
+
 ; The l, n and m variables could be changed to fit matrices of other sizes, but this 
 ; requires compiling again for different values. 
-; 
+
 ; The program could also be rewritten, it could take the matrix heigth and width as 
 ; a argument from SYS_READ. and use theese values while calling readBinaryData.

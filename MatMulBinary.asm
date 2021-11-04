@@ -210,7 +210,7 @@ jTLoop:
    readoutMatrix eax, w32FrStck(7), w32FrStck(5), w32FrStck(2), w32FrStck(3)
                           ; m     ,     w       ,     y       ,     x
 
-   mov ecx, w32FrStck(1)  ; acc 
+   mov ecx, w32FrStck(1)  ; ecx <- acc 
    mul ecx                ; eax <- acc*m[y][x]
    mov ebx, w32FrStck(5)  ; w 
    mov edx, 0 
@@ -257,7 +257,6 @@ middle_loop:
    cmp ecx, m             ; j < m ?
    jge middle_loop_end
    
-
 ;  int acc = 0;
    mov eax, w32FrStck(3) ; acc
    mov eax, 0            ; acc = 0
@@ -280,7 +279,6 @@ inner_loop:
    mul ebx ; A[i][k] * B[k][j]
    mov ebx, w32FrStck(3) ; acc
    add ebx, eax ; acc += A[i][k] * B[k][j]
-   add ebx, edx
    mov w32FrStck(3), ebx ; store acc
    
 
@@ -296,13 +294,11 @@ inner_loop_end:
    writeToMatrix ebx , matrixC, m, w32FrStck(0), w32FrStck(1)
             ;    acc ,   mC   , w,     y=i     ,     x=j
    
-
    mov ecx, w32FrStck(1)  ; iterations j
    inc ecx                ; j++
    mov w32FrStck(1), ecx  ; save j
    jmp middle_loop
 middle_loop_end:
-   
 
    mov ecx, w32FrStck(0)  ; iterations i
    inc ecx                ; i++

@@ -76,6 +76,7 @@ public class MatMulUniversal {
       A = importMatrix(input, l,n);
       B = importMatrix(input, n,m);
     }
+    
     int C[][] = new int[l][m];
     for (int i=0; i<l; ++i) {
       for (int j=0; j<m; ++j) {
@@ -86,6 +87,8 @@ public class MatMulUniversal {
         C[i][j] = acc;
       }
     }
+
+    
     System.out.println(jumpTrace(C));
   }
 }

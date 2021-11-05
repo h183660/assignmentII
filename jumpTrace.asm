@@ -1,38 +1,52 @@
-readBinaryData:
-   mov eax,SYS_READ        ; SYS_READ is equal to 3, corresponding to the sys_read system call. This is stored in the accumulator.
-   mov ebx,STDIN           ; STDIN is equal to 0 from the .data section. 0 is the file descriptor for STDIN. Moves 0 into ebx.
-   mov ecx, w32FrStck(1)   ; Store matrix adress to ecx. The later syscall saves input data to the adress stored in ecx.
-   mov edx, 8*4            ; Size of the incoming message. 8*4=32, this corresponding to a 32bit binary number or double word.
-   int 80h                 ; Interrupt, it now reads 32 characters from STDIN and stores it where ECX points to.
-   mov eax, 8*4            ; Sets EAX to 32 (0x20), like in 32 bits...
-   mov ecx, w32FrStck(1)   ; Sets ecx to the address stored in w32FrStck(1)
-   add ecx, eax            ; Adds 32 to the address stored in ecx
-   mov w32FrStck(1), ecx   ; Stores the value back in w32FrStck(1), this is now the adress for the next number.
-   mov edx, w32FrStck(2)   ; Stores the remainding bits from w32FrStck(2) to edx.
-   sub edx, eax            ; Subtracts 32 (0x20) from the remainding bits.
-   mov w32FrStck(2), edx   ; Stores the updated remainding bits value to the w32FrStck(2) adress.
-   cmp edx, 0              ; Compares the "remainding bits" with 0.
-   jg readBinaryData       ; Jumps to readBinaryDate (loops) if remainding bits > 0.
-   ret
-; - Would the routine work with matrices of any size?
-; It does work with the A- and B matrices we are using,
-; but what requirement makes this possible?
+jumpTrace:
+   funargs3 edx, ecx, ebx ; m, h, w
+   push edx               ; m             ; #7
+   mov eax, ebx           ; eax <- w
+   mul ecx                ; eax <- w*h  {eax*ecx} {iterations}
+   push eax               ; matrix size   ; #6
+   push ebx               ; w             ; #5
+   push ecx               ; h             ; #4
+   push dword 0           ; x             ; #3
+   push dword 0           ; y             ; #2
+   push dword 1           ; acc           ; #1
+   push eax               ; iterations    ; #0
 
-; No, it would not work with matrices of any size. The matrices has to fit the specified
-; row and column count from the .data section, here lies the variables l, n and m. 
-; l and n specify the A matrix height and width, while n and m specify the heigth and
-; width of matrix B. Here l = 300, n = 50 and m = 500, this matches the given A and B
-; matrices. If you wanted matrices of other sized these values has to be changed.
+jTLoop:
+   readoutMatrix eax, w32FrStck(7), w32FrStck(5), w32FrStck(2), w32FrStck(3)
+                    ;     m       ,     w       ,     y       ,     x
+   mov ecx, w32FrStck(1)  ; acc
+   mul ecx                ; eax <- acc*m[y][x]
+   inc eax                ;
+   mov ebx, w32FrStck(6)  ; w*h
+   mov edx, 0             ;
+   div ebx                ; edx <- (acc*m[y][x] + 1) % (w*h)
+   mov w32FrStck(1), edx  ; acc
+   mov ebx, w32FrStck(4)  ; h
+   mov eax, edx           ; acc
+   mov edx, 0             ;
+   div ebx                ; edx <- acc % h
+   mov w32FrStck(2), edx  ; y <- acc%h
+   readoutMatrix eax, w32FrStck(7), w32FrStck(5), w32FrStck(2), w32FrStck(3)
+                          ; m     ,     w       ,     y       ,     x
 
-; Furthermore matrix multiplication is only defined while the number of columns in 
-; matrix A matches the number of rows in matrix B.
+   mov ecx, w32FrStck(1)  ; Move acc into register edx
+   mul ecx                ; Multiply edx with eax, eax being m[y][x]
+   mov ebx, w32FrStck(5)  ; Move data from stack address 5 into register ebx
+   mov edx, 0             ; Move 0 to edx, so the high order double word is 0 before the devision
+   div ebx                ; Divide eax by ebx, and store quotient into eax, and store the remainder in edx (acc*m[y][x]) % w
+   mov w32FrStck(3), edx  ; Store x into the stack address 3
 
-; - What could be changed to actually make it work with any size?
-; Discuss if your suggestion has any drawbacks.
-
-; The l, n and m variables could be changed to fit matrices of other sizes, but this 
-; requires compiling again for different values. 
-
-; The program could also be rewritten more, it could take the matrix heigth and width as 
-; a argument from SYS_READ. and use theese values while calling readBinaryData. This would
-; take a lot more work.
+   mov ecx, w32FrStck(0)  ; iterations
+   dec ecx                ; --iterations
+   mov w32FrStck(0), ecx  ; iterations
+   cmp ecx, 0             ; iterations > 0 ?
+   jg jTLoop
+   pop edx                ; iterations  ; #0
+   pop eax                ; acc         ; #1
+   pop edx                ; y           ; #2
+   pop edx                ; x           ; #3
+   pop edx                ; h           ; #4
+   pop edx                ; w           ; #5
+   pop edx                ; matrix size ; #6
+   pop edx                ; m           ; #7
+   funret3_1 eax

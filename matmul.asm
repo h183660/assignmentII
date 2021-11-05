@@ -43,11 +43,10 @@ inner_loop:
    add eax, ecx ; acc += A[i][k] * B[k][j]
    mov w32FrStck(3), eax ; store acc
    
-   
    mov ecx, w32FrStck(2)  ; iterations k
    inc ecx                ; k++
    mov w32FrStck(2), ecx  ; save k
-   jmp inner_loop
+   jmp inner_loop         ; jump to start of inner loop
    
 inner_loop_end:
    
@@ -59,13 +58,15 @@ inner_loop_end:
    mov ecx, w32FrStck(1)  ; iterations j
    inc ecx                ; j++
    mov w32FrStck(1), ecx  ; save j
-   jmp middle_loop
+   jmp middle_loop        ; jump to start of middle loop
+
 middle_loop_end:
    
    mov ecx, w32FrStck(0)  ; iterations i
    inc ecx                ; i++
    mov w32FrStck(0), ecx  ; save i
-   jmp outer_loop
+   jmp outer_loop         ; jump to start of outer loop
+
 outer_loop_end:
    
    pop eax                ; i           ; #0

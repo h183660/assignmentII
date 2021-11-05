@@ -233,17 +233,14 @@ jTLoop:
    funret3_1 eax
 
 ; Subtask 3 Matrix multiplication
-matmul:
-   push l                 ; l             #9
-   push n                 ; n             #8
-   push m                 ; m             #7            
-   push matrixC           ; C             #6
-   push matrixB           ; B             #5
-   push matrixA           ; A             #4
-   push 0                 ; acc           #3
-   push 0                 ; iterations k  #2
-   push 0                 ; iterations j  #1
-   push 0                 ; iterations i  #0
+matmul:           
+   push dword 0           ; C             #6
+   push dword 0           ; B             #5
+   push dword 0           ; A             #4
+   push dword 0                 ; acc           #3
+   push dword 0                 ; iterations k  #2
+   push dword 0                 ; iterations j  #1
+   push dword 0                 ; iterations i  #0
    
 ;  for (int i=0; i<l; ++i)
    mov ecx, w32FrStck(0) ; i
@@ -251,7 +248,7 @@ matmul:
    mov w32FrStck(0), ecx ; store i
 outer_loop:
    mov ecx, w32FrStck(0)  ; iterations i
-   cmp ecx, w32FrStck(9)             ; i < l ?
+   cmp ecx, l             ; i < l ?
    jge outer_loop_end
    
 ;  for (int j=0; j<m; ++j)
@@ -260,7 +257,7 @@ outer_loop:
    mov w32FrStck(1), ecx ; store j
 middle_loop:
    mov ecx, w32FrStck(1)  ; iterations j
-   cmp ecx, w32FrStck(7)             ; j < m ?
+   cmp ecx, m             ; j < m ?
    jge middle_loop_end
    
 ;  int acc = 0;
@@ -274,18 +271,18 @@ middle_loop:
    mov w32FrStck(2), ecx ; store k
 inner_loop:
    mov ecx, w32FrStck(2)  ; iterations k
-   cmp ecx, w32FrStck(8)             
+   cmp ecx, n             
    jge inner_loop_end     ; k < n ?
    
 ;  acc += A[i][k] * B[k][j]
-   readoutMatrix edx, w32FrStck(4), w32FrStck(8), w32FrStck(0), w32FrStck(2)
+   readoutMatrix ecx, matrixA, n, w32FrStck(0), w32FrStck(2)
                   ;     mA    , w,      y=i    ,     x=k
-   readoutMatrix eax, w32FrStck(5) , w32FrStck(7), w32FrStck(2), w32FrStck(1)
+   readoutMatrix eax, matrixB , m, w32FrStck(2), w32FrStck(1)
                   ;     mB    , w,      y=k    ,     x=j
-   mul edx ; A[i][k] * B[k][j]
-   mov edx, w32FrStck(3) ; acc
-   add edx, eax ; acc += A[i][k] * B[k][j]
-   mov w32FrStck(3), edx ; store acc
+   mul ecx ; A[i][k] * B[k][j]
+   mov ecx, w32FrStck(3) ; acc
+   add eax, ecx ; acc += A[i][k] * B[k][j]
+   mov w32FrStck(3), eax ; store acc
    
    
    mov ecx, w32FrStck(2)  ; iterations k
@@ -296,9 +293,12 @@ inner_loop:
 inner_loop_end:
    
 ;  C[i][j] = acc;
-   mov edx, w32FrStck(3)
-   writeToMatrix edx , w32FrStck(6), w32FrStck(7), w32FrStck(0), w32FrStck(1)
+   mov ecx, w32FrStck(3) ; acc
+   writeToMatrix ecx , matrixC, m, w32FrStck(0), w32FrStck(1)
             ;    acc ,   mC   , w,     y=i     ,     x=j
+   
+   readoutMatrix ecx, matrixC , m, w32FrStck(0), w32FrStck(1)
+                  ;     mB    , w,      y=i    ,     x=j
    
    mov ecx, w32FrStck(1)  ; iterations j
    inc ecx                ; j++
@@ -319,8 +319,5 @@ outer_loop_end:
    pop edx                ; A           ; #4
    pop edx                ; B           ; #5
    pop edx                ; C           ; #6
-   pop edx                ; m           ; #7
-   pop edx                ; n           ; #8
-   pop edx                ; l           ; #9
    
    ret

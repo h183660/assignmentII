@@ -4,5 +4,7 @@ ld -m elf_i386 MatMulBinary.o -o MatMulBinary
 
 javac MatMulUniversal.java
 
+(cat A1.mat B4.mat | ./toBinary)>input
+
 cat input | java MatMulUniversal --binary
 cat input | ./MatMulBinary
